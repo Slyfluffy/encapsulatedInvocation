@@ -19,6 +19,7 @@
 		C1D4EAED2577F57B002B56E3 /* uiInteract.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C1D4EAE52577F576002B56E3 /* uiInteract.cpp */; };
 		C1D4EAF22577F58C002B56E3 /* GLUT.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C1D4EAF02577F58C002B56E3 /* GLUT.framework */; };
 		C1D4EAF32577F58C002B56E3 /* OpenGL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C1D4EAF12577F58C002B56E3 /* OpenGL.framework */; };
+		CE3A8CBC27D99B2C00854D68 /* command.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CE3A8CBB27D99B2C00854D68 /* command.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -56,6 +57,9 @@
 		C1D4EAE62577F578002B56E3 /* uiInteract.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = uiInteract.h; sourceTree = "<group>"; };
 		C1D4EAF02577F58C002B56E3 /* GLUT.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = GLUT.framework; path = System/Library/Frameworks/GLUT.framework; sourceTree = SDKROOT; };
 		C1D4EAF12577F58C002B56E3 /* OpenGL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGL.framework; path = System/Library/Frameworks/OpenGL.framework; sourceTree = SDKROOT; };
+		CE3A8CBA27D996DA00854D68 /* command.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = command.h; sourceTree = "<group>"; };
+		CE3A8CBB27D99B2C00854D68 /* command.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = command.cpp; sourceTree = "<group>"; };
+		CE3A8CBD27D99E3D00854D68 /* invoker.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = invoker.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -78,6 +82,8 @@
 				C1841325273E9C4400143AB2 /* bullet.cpp */,
 				C1841324273E9C4400143AB2 /* bird.h */,
 				C1841327273E9C4700143AB2 /* bird.cpp */,
+				CE3A8CBA27D996DA00854D68 /* command.h */,
+				CE3A8CBB27D99B2C00854D68 /* command.cpp */,
 				C16B8F532744AFD8009CC1DC /* score.h */,
 				C16B8F502744ABDE009CC1DC /* score.cpp */,
 				C15451E427403CD70095997B /* effect.h */,
@@ -85,6 +91,7 @@
 				C1841323273E9C4400143AB2 /* game.cpp */,
 				C179F5FD2710DE0E00BD3050 /* gun.h */,
 				C1841326273E9C4500143AB2 /* gun.cpp */,
+				CE3A8CBD27D99E3D00854D68 /* invoker.h */,
 				C1841328273E9C4900143AB2 /* skeet.h */,
 				C1D4EAE22577F575002B56E3 /* skeet.cpp */,
 				C179F5FE2712254900BD3050 /* time.h */,
@@ -174,6 +181,7 @@
 				C16B8F522744ABDE009CC1DC /* score.cpp in Sources */,
 				C1D4EAED2577F57B002B56E3 /* uiInteract.cpp in Sources */,
 				C184132A273E9C4900143AB2 /* bullet.cpp in Sources */,
+				CE3A8CBC27D99B2C00854D68 /* command.cpp in Sources */,
 				C15451E627403ED30095997B /* effect.cpp in Sources */,
 				C184132C273E9C4900143AB2 /* bird.cpp in Sources */,
 				C1D4EAEA2577F57B002B56E3 /* point.cpp in Sources */,

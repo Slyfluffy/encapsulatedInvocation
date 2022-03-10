@@ -24,7 +24,7 @@ Point Bird::dimensions(WIDTH, HEIGHT);
   * engine will wait until the proper amount of
   * time has passed and put the drawing on the screen.
   **************************************/
-void callBack(const UserInput* pUI, void* p)
+void callBack(UserInput* pUI, void* p)
 {
    // the first step is to cast the void pointer into a game object. This
    // is the first step of every single callback function in OpenGL. 

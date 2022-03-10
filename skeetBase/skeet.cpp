@@ -52,58 +52,26 @@ void Skeet::animate()
    // spawn
    spawn();
    
-   // move the birds and the bullets
-   for (auto element : birds)
-   {
-      element->advance();
-      hitRatio.adjust(element->isDead() ? -1 : 0);
-   }
-   for (auto bullet : bullets)
-      bullet->move(effects);
-   for (auto effect : effects)
-      effect->fly();
-      
-   // hit detection
-   for (auto element : birds)
-      for (auto bullet : bullets)
-         if (!element->isDead() && !bullet->isDead() &&
-             element->getRadius() + bullet->getRadius() >
-             minimumDistance(element->getPosition(), element->getVelocity(),
-                             bullet->getPosition(),  bullet->getVelocity()))
-         {
-            for (int i = 0; i < 25; i++)
-               effects.push_back(new Fragment(bullet->getPosition(), bullet->getVelocity()));
-            element->kill();
-            bullet->kill();
-            hitRatio.adjust(1);
-         }
+   AbstractCommand * moveBirds = new AdvanceBird(&birds, &hitRatio);
+   AbstractCommand * moveBullets = new AdvanceBullet(&bullets, &effects);
+   AbstractCommand * moveEffects = new AdvanceEffects(&effects);
+   AbstractCommand * detect = new DetectHits(&birds, &bullets, &effects, &hitRatio);
+   AbstractCommand * remove = new RemoveZombies(&birds, &bullets, &effects, &score);
    
-   // remove the zombie birds
-   for (auto it = birds.begin(); it != birds.end();)
-      if ((*it)->isDead())
-      {
-         score.adjust((*it)->getPoints());
-         it = birds.erase(it);
-      }
-      else
-         ++it;
-       
-   // remove zombie bullets
-   for (auto it = bullets.begin(); it != bullets.end(); )
-      if ((*it)->isDead())
-      {
-         (*it)->death(bullets);
-         it = bullets.erase(it);
-      }
-      else
-         ++it;
+   invoker.setCommand(moveBirds);
+   invoker.executeCommand();
    
-   // remove zombie fragments
-   for (auto it = effects.begin(); it != effects.end();)
-      if ((*it)->isDead())
-         it = effects.erase(it);
-      else
-         ++it;
+   invoker.setCommand(moveBullets);
+   invoker.executeCommand();
+   
+   invoker.setCommand(moveEffects);
+   invoker.executeCommand();
+   
+   invoker.setCommand(detect);
+   invoker.executeCommand();
+   
+   invoker.setCommand(remove);
+   invoker.executeCommand();
 }
 
 /************************************************************************
@@ -302,7 +270,7 @@ void Skeet::drawStatus() const
  * SKEET INTERACT
  * handle all user input
  ************************/
-void Skeet::interact(const UserInput & ui)
+void Skeet::interact(UserInput & ui)
 {
    // reset the game
    if (time.isGameOver() && ui.isSpace())
@@ -315,44 +283,16 @@ void Skeet::interact(const UserInput & ui)
 
    // gather input from the interface
    gun.interact(ui.isUp() + ui.isRight(), ui.isDown() + ui.isLeft());
-   Bullet *p = nullptr;
 
    // a pellet can be shot at any time
-   if (ui.isSpace())
-      p = new Pellet(gun.getAngle());
-   // missiles can be shot at level 2 and higher
-   else if (ui.isM() && time.level() > 1)
-      p = new Missile(gun.getAngle());
-   // bombs can be shot at level 3 and higher
-   else if (ui.isB() && time.level() > 2)
-      p = new Bomb(gun.getAngle());
-   
-   // add something if something has been added
-   if (nullptr != p)
-   {
-      bullets.push_back(p);
-      score.adjust(0 - p->getValue());
-   }
+   AbstractCommand * command = new FireBullet(&bullets, ui, gun.getAngle(), &time, &score);
+   invoker.setCommand(command);
+   invoker.executeCommand();
    
    // send movement information to all the bullets. Only the missile cares.
-   for (auto bullet : bullets)
-      bullet->input(ui.isUp() + ui.isRight(), ui.isDown() + ui.isLeft(), ui.isB()); 
-}
-
-/******************************************************************
- * RANDOM
- * This function generates a random number.
- *
- *    INPUT:   min, max : The number of values (min <= num <= max)
- *    OUTPUT   <return> : Return the integer
- ****************************************************************/
-int random(int min, int max)
-{
-   assert(min < max);
-   int num = (rand() % (max - min)) + min;
-   assert(min <= num && num <= max);
-
-   return num;
+   AbstractCommand * move = new MoveMissile(&bullets, ui);
+   invoker.setCommand(move);
+   invoker.executeCommand();
 }
 
 /************************
@@ -361,75 +301,33 @@ int random(int min, int max)
  ************************/
 void Skeet::spawn()
 {
-   double size;
+   AbstractCommand * command;
    switch (time.level())
    {
       // in level 1 spawn big birds occasionally
       case 1:
-         size = 30.0;
-         // spawns when there is nothing on the screen
-         if (birds.size() == 0 && random(0, 15) == 1)
-            birds.push_back(new Standard(size, 7.0));
-         
-         // spawn every 4 seconds
-         if (random(0, 4 * 30) == 1)
-            birds.push_back(new Standard(size, 7.0));
+         command = new CreateBirdsLevel1(&birds);
+         invoker.setCommand(command);
+         invoker.executeCommand();
          break;
-         
       // two kinds of birds in level 2
       case 2:
-         size = 25.0;
-         // spawns when there is nothing on the screen
-         if (birds.size() == 0 && random(0, 15) == 1)
-            birds.push_back(new Standard(size, 7.0, 12));
-
-         // spawn every 4 seconds
-         if (random(0, 4 * 30) == 1)
-            birds.push_back(new Standard(size, 5.0, 12));
-         // spawn every 3 seconds
-         if (random(0, 3 * 30) == 1)
-            birds.push_back(new Sinker(size));
+         command = new CreateBirdsLevel2(&birds);
+         invoker.setCommand(command);
+         invoker.executeCommand();
          break;
-      
       // three kinds of birds in level 3
       case 3:
-         size = 20.0;
-         // spawns when there is nothing on the screen
-         if (birds.size() == 0 && random(0, 15) == 1)
-            birds.push_back(new Standard(size, 5.0, 15));
-
-         // spawn every 4 seconds
-         if (random(0, 4 * 30) == 1)
-            birds.push_back(new Standard(size, 5.0, 15));
-         // spawn every 4 seconds
-         if (random(0, 4 * 30) == 1)
-            birds.push_back(new Sinker(size, 4.0, 22));
-         // spawn every 4 seconds
-         if (random(0, 4 * 30) == 1)
-            birds.push_back(new Floater(size));
+         command = new CreateBirdsLevel3(&birds);
+         invoker.setCommand(command);
+         invoker.executeCommand();
          break;
-         
       // three kinds of birds in level 4
       case 4:
-         size = 15.0;
-         // spawns when there is nothing on the screen
-         if (birds.size() == 0 && random(0, 15) == 1)
-            birds.push_back(new Standard(size, 4.0, 18));
-
-         // spawn every 4 seconds
-         if (random(0, 4 * 30) == 1)
-            birds.push_back(new Standard(size, 4.0, 18));
-         // spawn every 4 seconds
-         if (random(0, 4 * 30) == 1)
-            birds.push_back(new Sinker(size, 3.5, 25));
-         // spawn every 4 seconds
-         if (random(0, 4 * 30) == 1)
-            birds.push_back(new Floater(size, 4.0, 25));
-         // spawn every 4 seconds
-         if (random(0, 4 * 30) == 1)
-            birds.push_back(new Crazy(size));
+         command = new CreateBirdsLevel4(&birds);
+         invoker.setCommand(command);
+         invoker.executeCommand();
          break;
-         
       default:
          break;
    }

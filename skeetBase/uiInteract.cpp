@@ -264,7 +264,7 @@ bool         UserInput::initialized  = false;
 double       UserInput::timePeriod   = 1.0 / 30; // default to 30 frames/second
 unsigned long UserInput::nextTick     = 0;        // redraw now please
 void *       UserInput::p            = NULL;
-void (*UserInput::callBack)(const UserInput *, void *) = NULL;
+void (*UserInput::callBack)(UserInput *, void *) = NULL;
 
 
 /************************************************************************
@@ -327,7 +327,7 @@ void UserInput::initialize(int argc, char ** argv, const char * title, const Poi
  *                   will need to cast this back to your own data
  *                   type before using it.
  *************************************************************************/
-void UserInput::run(void (*callBack)(const UserInput *, void *), void *p)
+void UserInput::run(void (*callBack)(UserInput *, void *), void *p)
 {
    // setup the callbacks
    this->p = p;

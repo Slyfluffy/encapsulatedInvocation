@@ -10,13 +10,8 @@
 #pragma once
 
 #include "point.h"
-#include "uiInteract.h"
-#include "bird.h"
-#include "bullet.h"
-#include "effect.h"
 #include "gun.h"
-#include "time.h"
-#include "score.h"
+#include "invoker.h"
 
 #include <list>
 
@@ -31,7 +26,7 @@ public:
         gun(Point(800.0, 0.0)), time(), score(), hitRatio() {}
 
     // handle all user input
-    void interact(const UserInput& ui);
+    void interact(UserInput& ui);
 
     // move the gameplay by one unit of time
     void animate();
@@ -58,4 +53,5 @@ private:
     Score score;                   // the player's score
     HitRatio hitRatio;               // the hit ratio for the birds
     Point dimensions;              // size of the screen
+   Invoker invoker;
 };
